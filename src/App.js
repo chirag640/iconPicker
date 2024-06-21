@@ -18,40 +18,58 @@ const IconPicker = ({
   const totalPages = Math.ceil(icons.length / iconsPerPage);
   const [selectedIcon, setSelectedIcon] = useState(null);
 
+
   const handleIconClick = (iconName) => {
     setSelectedIcon(iconName);
     onSelect(iconName);
+  };
+
+  const handleCancel = () => {
+    onCancel();
+  };
+
+  const handleDone = () => {
+    onDone();
+  };
+
+
+
+  const navigateToPage = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   return (
     <div className="icon-picker" style={{ height: pickerHeight, width: pickerWidth }}>
       <div className="header">
         <h2>Select App Icon</h2>
-        <button className="close-button" onClick={onCancel}>×</button>
+        <button className="close-button" onClick={handleCancel}>×</button>
       </div>
-      <div className="icons-grid" style={{ 
-        gridTemplateRows: `repeat(${rowsInOnePage}, ${iconHeight}px)`, 
+      <div className="icons-grid" style={{
+        gridTemplateRows: `repeat(${rowsInOnePage}, ${iconHeight}px)`,
         gridTemplateColumns: `repeat(${columnsInOnePage}, ${iconWidth}px)`,
       }}>
         {icons.slice(currentPage * iconsPerPage, (currentPage + 1) * iconsPerPage).map(iconName => (
-          <div 
-            key={iconName} 
-            onClick={() => handleIconClick(iconName)} 
+          <div
+            key={iconName}
+            onClick={() => handleIconClick(iconName)}
             style={{ background: selectedIcon === iconName ? '#e0f7fa' : 'transparent' }}
             className="icon-container"
+            role="button"
+            tabIndex="0"
+            aria-label={`Select ${iconName} icon`}
           >
             <div dangerouslySetInnerHTML={{ __html: feather.icons[iconName].toSvg({ height: iconHeight, width: iconWidth }) }} />
           </div>
         ))}
       </div>
       <div className="pagination">
-        <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 0}>Previous</button>
+        <button onClick={() => navigateToPage(currentPage - 1)} disabled={currentPage === 0}>Previous</button>
         <span>Page {currentPage + 1} of {totalPages}</span>
-        <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages - 1}>Next</button>
+        <button onClick={() => navigateToPage(currentPage + 1)} disabled={currentPage === totalPages - 1}>Next</button>
       </div>
       <div className="footer">
-        <button className="cancel-button" onClick={onCancel}>Cancel</button>
-        <button onClick={onDone}>Done</button>
+        <button className="cancel-button" onClick={handleCancel}>Cancel</button>
+        <button onClick={handleDone}>Done</button>
       </div>
     </div>
   );
@@ -75,8 +93,8 @@ const App = () => {
 
   return (
     <div>
-      <div 
-        className="icon-trigger" 
+      <div
+        className="icon-trigger"
         style={{ width: '100px', height: '100px', border: '1px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
         onClick={() => setPickerVisible(true)}
       >
@@ -84,15 +102,15 @@ const App = () => {
       </div>
       {isPickerVisible && (
         <div className="modal">
-          <IconPicker 
-            rowsInOnePage={5} 
-            columnsInOnePage={8} 
-            iconHeight={50} 
-            iconWidth={50} 
-            pickerHeight="400px" 
-            pickerWidth="600px" 
-            onSelect={handleSelectIcon} 
-            onCancel={handleCancel} 
+          <IconPicker
+            rowsInOnePage={5}
+            columnsInOnePage={8}
+            iconHeight={50}
+            iconWidth={50}
+            pickerHeight="600px"
+            pickerWidth="600px"
+            onSelect={handleSelectIcon}
+            onCancel={handleCancel}
             onDone={handleDone}
           />
         </div>
@@ -100,5 +118,6 @@ const App = () => {
     </div>
   );
 };
+
 
 export default App;
